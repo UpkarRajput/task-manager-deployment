@@ -25,12 +25,12 @@ app.get("/api/health", (req, res) => {
 
 // --- FRONTEND DEPLOYMENT LOGIC ---
 // Serve the Flutter Web build from the 'public' folder
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 
-// Catch-all route: if an API route isn't hit, serve the Flutter app
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+// // Catch-all route: if an API route isn't hit, serve the Flutter app
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, "public", "index.html"));
+// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
