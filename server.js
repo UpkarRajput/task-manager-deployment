@@ -13,8 +13,8 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5000",
-  // Replace with your actual Firebase Hosting URL once you deploy:
-  // "https://YOUR-PROJECT-ID.web.app",
+  "https://task-manager-frontend-59bda.web.app",
+  "https://task-manager-frontend-59bda.firebaseapp.com",
 ];
 
 app.use(
