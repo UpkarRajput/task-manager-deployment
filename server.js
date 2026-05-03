@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const path = require("path");
 
 // Route Imports
 const authRoutes = require("./routes/authRoutes");
@@ -10,27 +9,52 @@ const projectRoutes = require("./routes/projectRoutes");
 dotenv.config();
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS — allow local dev and the Firebase Hosting domain
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5000",
+  // Replace with your actual Firebase Hosting URL once you deploy:
+  // "https://YOUR-PROJECT-ID.web.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (e.g. mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".web.app") || origin.endsWith(".firebaseapp.com")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
+
+// Root route — confirms the API is live
+app.get("/", (req, res) => {
+  res.json({
+    message: "Task Manager API is running!",
+    version: "1.0.0",
+    endpoints: {
+      health: "/api/health",
+      auth: "/api/auth",
+      projects: "/api/projects",
+    },
+  });
+});
 
 // API Endpoints
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 
-// Simple health check endpoint
+// Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({ message: "Task Manager API is running!" });
 });
-
-// --- FRONTEND DEPLOYMENT LOGIC ---
-// Serve the Flutter Web build from the 'public' folder
-// app.use(express.static(path.join(__dirname, "public")));
-
-// // Catch-all route: if an API route isn't hit, serve the Flutter app
-// app.get(/.*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, "public", "index.html"));
-// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
